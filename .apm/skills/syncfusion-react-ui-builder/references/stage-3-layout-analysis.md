@@ -1,8 +1,85 @@
 # Stage 3: Layout Analysis & Component Mapping (Combined)
 
-**Purpose:** Analyze user requirements, create optimal component-mapping.json, and map to Syncfusion components automatically. **FULLY AUTOMATED — NO user interaction.**
+**Purpose:** Analyze user requirements, create optimal component-mapping.json, and map to Syncfusion components automatically. **FULLY AUTOMATED — NO user interaction (unless component validation required OR data binding adaptor is ambiguous).**
 
 ---
+
+## 🛑 MANDATORY DATA BINDING GATE (Runs Before Component Mapping Output)
+
+**This gate MUST be evaluated before completing Stage 3 output.**
+
+### Gate Evaluation Logic
+
+```
+IF Stage 1 flagged dataBindingStatus = "AMBIGUOUS_URL_DETECTED"
+OR the component mapping includes any data-bound component
+   (GridComponent, DropDownListComponent, ComboBoxComponent, ListViewComponent, TreeViewComponent, GanttComponent, PivotViewComponent, etc.)
+   AND a service URL was provided in the user prompt
+   AND no explicit adaptor keyword was identified in Stage 1
+THEN:
+  → Add to Component Mapping JSON:
+      "dataBinding": {
+        "status": "PENDING_HUMAN_GATE",
+        "serviceUrl": "{detectedUrl}",
+        "adaptorDecision": null,
+        "gateRequired": true,
+        "reason": "Service URL present but adaptor type unknown"
+      }
+  → STOP Stage 3 output after the Component Mapping JSON
+  → PRESENT the Human Gate using the template in:
+       skills/syncfusion-react-data-manager/references/adaptor-decision-gate.md
+  → WAIT for user adaptor selection
+  → DO NOT advance to Stage 4 until adaptorDecision is confirmed
+  → Update "dataBinding.adaptorDecision" with confirmed adaptor
+  → Update "dataBinding.status" to "CONFIRMED"
+  → Then resume Stage 3 → Stage 4 flow normally
+```
+
+### Component Mapping JSON — Data Binding Flag Example
+
+When the gate is pending, the component-mapping.json MUST include this flag:
+
+```json
+{
+  "component_type": "Employee Dashboard",
+  "variant": "Standard",
+  "dataBinding": {
+    "status": "PENDING_HUMAN_GATE",
+    "serviceUrl": "http://customurl/api/employees",
+    "adaptorDecision": null,
+    "gateRequired": true,
+    "reason": "Service URL provided but adaptor type (ODataV4 / WebAPI / UrlAdaptor / GraphQL / Custom) cannot be determined without user confirmation"
+  },
+  "mapped_components": [...]
+}
+```
+
+After user confirms:
+
+```json
+{
+  "dataBinding": {
+    "status": "CONFIRMED",
+    "serviceUrl": "http://customurl/api/employees",
+    "adaptorDecision": "WebApiAdaptor",
+    "referenceFile": "web-api-adaptor.md",
+    "gateRequired": false
+  }
+}
+```
+
+### Gate Presentation
+
+When presenting the gate to the user, use the **exact template** from:
+📄 `skills/syncfusion-react-data-manager/references/adaptor-decision-gate.md`
+→ Section: **"Gate Presentation Template"**
+
+After user confirms → proceed to Stage 4 with the confirmed adaptor recorded in the component-mapping JSON.
+
+---
+
+---
+
 
 ## Stage 3: Layout Analysis
 

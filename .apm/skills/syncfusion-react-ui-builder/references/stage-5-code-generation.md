@@ -2,6 +2,42 @@
 
 **Purpose:** Generate production-ready React code, CSS, and TypeScript interfaces with accessibility and web standards compliance.
 
+## 🛑 MANDATORY PRE-CHECK: Adaptor Decision Gate Verification
+
+**Before generating ANY `DataManager` or data binding code, verify:**
+
+```
+READ component-mapping.json → check "dataBinding" section
+
+IF dataBinding.status == "PENDING_HUMAN_GATE"
+  → ⛔ STOP — DO NOT generate DataManager code
+  → Return to Stage 3 and present the adaptor gate
+  → Wait for user confirmation before proceeding
+
+IF dataBinding.status == "CONFIRMED"
+  → ✅ Use dataBinding.adaptorDecision as the Adaptor enum value
+  → Load the reference file specified in dataBinding.referenceFile
+  → Generate DataManager with the confirmed adaptor ONLY
+
+IF no remote binding (local data only)
+  → ✅ Proceed — no gate required, use DataManager with Json property
+```
+
+**Example — Confirmed WebApiAdaptor from component-mapping.json:**
+```tsx
+const data = new DataManager({ 
+    url: 'url', // Replace actual port,
+    adaptor: new WebApiAdaptor(),
+});
+<GridComponent dataSource={data} allowPaging="true">
+    {/* columns */}
+</GridComponent>
+```
+
+> **Never hardcode a URL from user input directly into DataManager.Url.** Always assign via a validated private string property.
+
+---
+
 ## CRITICAL: Read Component Skills BEFORE Code Generation
 
 **THIS STEP IS NOT OPTIONAL - Must be completed before writing any code**
