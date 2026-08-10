@@ -339,7 +339,7 @@ node --version
   ```
   Do not proceed or use any manual fallback. The script is required for accurate component mapping.
 
-**Step 3: Run ComponentMapper Script** with component-mapping.json input
+**Step 3: Run ComponentMapper Script**
 ```bash
 cd <project-root>/<skills-dir>/syncfusion-react-ui-builder/scripts
 node components-search.cjs <project-root>/component-mapping.json

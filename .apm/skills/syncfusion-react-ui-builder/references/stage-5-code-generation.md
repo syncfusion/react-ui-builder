@@ -89,90 +89,17 @@ Icons: [list unique iconCss values]
 - Read: `{.agent-root}/skills/<skill-name>/SKILL.md` for complete API documentation
 - Read feature-specific guides: `<skill-name>/references/filtering.md`, `validation.md`, `styling.md`, etc.
 
-### Step 4: (CRITICAL) Syncfusion Single Theme Package - App Entry Point Only
+### Step 4: (CRITICAL) Read the Syncfusion themes guide to install the overall single Syncfusion theme package:
 
-**⚠️ MANDATORY RULES - VIOLATION WILL CAUSE BUILD FAILURES:**
+1. **Read:** `{.agent-root}/skills/syncfusion-react-ui-builder/references/syncfusion-themes.md`
 
-1. **SINGLE THEME PACKAGE ONLY:**
-   - Use ONLY the overall Syncfusion theme package (e.g., `@syncfusion/ej2-bootstrap5-theme`)
-   - **NEVER import individual component theme files** (e.g., `@syncfusion/ej2-buttons/styles/bootstrap5.css`)
-
-2. **IMPORT LOCATION: App Entry Point Only:**
-   - Import the single theme package in `index.css` — **NEVER in component files**
-   - Component files should import only the React component packages (e.g, `@syncfusion/ej2-react-buttons`)
-
-3. **Read:** `{.agent-root}/skills/syncfusion-react-ui-builder/references/syncfusion-themes.md`
-
-**Correct Pattern:**
-
-```css
-/* index.css - Theme package import via CSS @import */
-@import '@syncfusion/ej2-bootstrap5-theme/styles/bootstrap5.css';
-```
-
-```tsx
-/* App.tsx - Component imports only, NO theme package imports */
-import './App.css';
-import Dashboard from './components/Dashboard/Dashboard';
-
-// Dashboard.tsx - Component imports only, NO theme package imports
-import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
-import { GridComponent } from '@syncfusion/ej2-react-grids';
-```
-
-**Incorrect Pattern (will fail build):**
-```tsx
-// Dashboard.tsx - WRONG! Individual component theme package imports
-import '@syncfusion/ej2-buttons/styles/bootstrap5.css';  // ❌ NEVER
-import '@syncfusion/ej2-grids/styles/bootstrap5.css';    // ❌ NEVER
-```
-
-### Step 4.5: (MANDATORY) Read CSS Variables for Your Selected Theme
-
-**⚠️ This step MUST be completed before generating ANY CSS customization**
-1. **Read** the CSS variables file for your selected theme:
-   - **Tailwind 3** → `{.agent-root}/skills/syncfusion-react-themes/references/tailwind3-css-variables.md`
-   - **Bootstrap 5.3** → `{.agent-root}/skills/syncfusion-react-themes/references/bootstrap5.3-css-variables.md`
-   - **Material 3** → `{.agent-root}/skills/syncfusion-react-themes/references/material3-css-variables.md`
-   - **Fluent 2** → `{.agent-root}/skills/syncfusion-react-themes/references/fluent2-css-variables.md`
-
-2. **Identify YOUR theme** from Stage 4 and use correct format:
-   - **Fluent 2 / Bootstrap 5 / Tailwind 3** → hex values
-   - **Material 3** → RGB tuples (no `rgb()` wrapper)
-
-3. **Use ONLY `--color-sf-*` variables** when customizing Syncfusion. Never arbitrary hex or custom variables.
-4. **Include ALL variables from the 'Core CSS Variables Reference' table** in your generated CSS. Do not skip any — especially interaction-related variables (`*_hover`, `*_selected`, `*_pressed`, `*_focus`, `*_dragged`).
-
-### Step 4.6: (MANDATORY) Confirm Dark Mode Status
-
-**⚠️ This step MUST be completed before generating ANY component markup**
-
-1. **Check for dark mode requirement** from Stage 4 dark mode decision:
-   - Review `styles.css` (or equivalent) for `.dark { --background: ... }` definitions
-   - Check for `--background` values darker than `#1a1a1a` inside `.dark` blocks
-   - Verify Stage 4 dark mode decision checklist was completed
-
-2. **If dark mode IS needed** (project has `.dark` class with dark background):
-   - Components that display data (Grid, TreeGrid, DataGrid, etc.) MUST be wrapped in `e-dark-mode` class
-   - Example: `<div class="e-dark-mode"><ejs-grid [dataSource]="data"></ejs-grid></div>`
-
-3. **If dark mode is NOT needed** (light-only theme):
-   - No `e-dark-mode` wrapper required
-   - Components render in default light theme
-
-**⚠️ ENFORCEMENT: Dark mode wrapper is MANDATORY when Stage 4 detected dark backgrounds.** Do NOT skip this check — components without proper dark mode wrapping will render incorrectly.
+**Important** Use overall single Syncfusion theme package.
 
 ### Step 5: NOW Generate Code Using Extracted Information
 
 Only after completing Steps 1-4, generate the .tsx file using the exact imports extracted from component skills.
 
 **ALL Selected Components MUST Be Used.** Do not substitute Stage 3 components with native HTML alternatives.
-
-**⚠️ ENFORCEMENT: No Theme Imports in Component Files:**
-- Component `.tsx` files should ONLY import React component packages
-- **NEVER import theme CSS files** (`*.css` from `@syncfusion/ej2-*-theme` or `@syncfusion/ej2-*/styles/*.css`) in component files
-  - Theme imports belong ONLY in app entry point (`index.css`)
-- If you see theme imports in generated component code, **reject and regenerate**
 
 **Common Mistake to Avoid:**
 ❌ Generate code, then try to add overall single Syncfusion theme style imports later → Results in missing styles, broken UI
@@ -219,10 +146,8 @@ Only after completing Steps 1-4, generate the .tsx file using the exact imports 
 **Code Generation Standards:**
 
 - **Component Imports:** Use exact import syntax from component skill's getting-started.md
-- **Style Imports (CRITICAL):** 
-  - Theme CSS import goes in `index.css` only (app entry point)
-  - Component `.tsx` files should NEVER import theme CSS files
-  - See Step 4 for complete rules on single theme package usage
+- **Style Imports:** Include the Syncfusion single package theme from `references/syncfusion-themes.md`
+ **Read:** `{.agent-root}/skills/syncfusion-react-ui-builder/references/syncfusion-themes.md`
 - **Semantic HTML:** Use proper HTML5 elements (`<form>`, `<label>`, `<button>`, etc.)
 - **Accessibility:** ARIA labels, roles, aria-describedby, aria-invalid where needed
 - **TypeScript:** No `any` types, full type safety
@@ -232,12 +157,6 @@ Only after completing Steps 1-4, generate the .tsx file using the exact imports 
 - **Security:** No dangerouslySetInnerHTML, sanitize inputs, no hardcoded secrets
 - **Comments:** JSDoc on component, explain complex logic
 - **Layout Validation (CRITICAL):** For any multi-section layout (sidebar + content, header + body, grid layouts, etc.): (1) Use flexbox for section coordination, (2) Prevent flexible sections from shrinking below content width, (3) Contain main content within viewport to prevent horizontal scroll, (4) Verify all sections properly aligned across mobile (320px), tablet (768px), and desktop (1024px+) viewports
-
-## Styling Rule: Syncfusion Components (MANDATORY)
-
-**See Step 4.5 for CSS variable details** — always use `--color-sf-*` variables. Never arbitrary CSS selectors for Syncfusion components.
-
----
 
 ### Media (MANDATORY)
 
@@ -259,9 +178,8 @@ Every icon from the Stage 3 selection list MUST appear in the generated code:
 - All selected icons MUST be implemented in appropriate UI locations based on their semantic meaning
 
 **Step 1: Attempt to find icon from Component Mapping**
-- **Always run the ComponentMapper script first** to retrieve semantic icon mappings (BM25 search against EJ2 icons).
-- Refer to the Component skill guidelines for properly adding icons in Syncfusion Blazor components, and avoid adding icons unnecessarily.
-- **If the mapping score is greater than 5**, use the corresponding icon CSS class:`<span className="e-icons e-user"></span>`
+- **Always run ComponentMapper script first** to get semantic icon mappings (BM25 search against EJ2 icons)
+- **Use icon CSS class if score > 5:** `<span className="e-icons e-mail"></span>`
 - **Never leave empty space** - either icon or emoji, not blank
 
 **Step 2: If Icon Not Found or Score Too Low**
@@ -366,11 +284,7 @@ import './LoginForm.css';
   border: 1px solid #6c757d;
 }
 ```
-**⚠️ MANDATORY Syncfusion Component Enforcement:** 
-- **NEVER use native HTML elements** (`<input>`, `<button>`, `<select>`, `<table>`, `<textarea>`) for UI controls that have Syncfusion equivalents.
-- **ALWAYS map:** `<input type="text">` → `TextBoxComponent`, `<input type="password">` → `TextBoxComponent`, `<button>` → `ButtonComponent`
-- **If any Syncfusion component exists** for the UI element type → Use the Syncfusion component
-- **The component mapping from Stage 3 is authoritative** - always use the mapped components
+**Native HTML Check:** If generated code uses a native HTML element (e.g., `<div>`, `<span>` for UI controls), verify a Syncfusion alternative exists in the component skills before using it. Replace with Syncfusion component if available.
 ---
 
 ### Reading Component Skills BEFORE Using generate code (MANDATORY)
